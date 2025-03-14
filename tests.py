@@ -22,6 +22,20 @@ def test_distribution_lol_iid():
   _test_lol_iid(batch_dimension=100000, num_seeds=100, num_dims=8, dist=uniform())
   _test_lol_iid(batch_dimension=1, num_seeds=5, num_dims=3, dist=beta(a=1, b=5))
 
+def test_singularity_at_zero_handling():
+  num_dims = 1
+  batch_dimension = 10000
+  num_seeds = 10
+  mean = np.random.randn(num_dims)
+  std = np.random.gamma(scale=1, shape=1, size=num_dims)
+  w = np.zeros([batch_dimension, num_seeds])
+  X = np.random.normal(loc=mean, scale=std, size=[batch_dimension, num_seeds, num_dims])
+  output = lol_gaussian(w, X, mean=mean)
+  _validate_samples(
+    samples=output.flatten(),
+    dist=norm(loc=mean[0], scale=std[0])
+  )
+
 def _test_lol_scalar(batch_dimension, num_seeds, dist):
   w = np.random.normal(size=[batch_dimension, num_seeds])
   X = dist.rvs(size=[batch_dimension, num_seeds])

@@ -39,9 +39,9 @@ def lol_gaussian(
   _check_larger_than_zero(jitter, "jitter")
   if mean is None:
     mean = np.zeros([num_dims], dtype=X.dtype)
+  w = _handle_singularity_at_zero(w=w, jitter=jitter)
   alpha = np.sum(w, axis=1)
-  # Adding a small constant to avoid sqrt(0) in the denominator for all zero weights
-  beta = np.sum(w ** 2, axis=1) + jitter
+  beta = np.sum(w ** 2, axis=1)
   weighted_sum = np.einsum('bij,bi->bj', X, w) # y = X @ w
   alpha_broadcasted, beta_broadcasted = alpha[:, None], beta[:, None]
   mean_broadcasted = mean[None, :]
@@ -50,6 +50,25 @@ def lol_gaussian(
     weighted_sum / np.sqrt(beta_broadcasted)
   )
   return transformed_samples
+
+def _handle_singularity_at_zero(
+  w: Float[np.ndarray, "batch_dimension num_seeds"],
+  jitter: float
+) -> Float[np.ndarray, "batch_dimension"]:
+  """
+  If all the weights are zero, the transformed samples will be zero. This singularity we can avoid
+  by treating the weights as uniform, which semantically they are.
+  :param w: Weights of the linear combination.
+  :param jitter: Small value defining the smallest value denominator beta can take.
+  :return: Weights with the singularity handled.
+  """
+  assert jitter > 0, "Jitter must be larger than zero."
+  _, num_seeds = w.shape
+  are_the_weights_all_zero = np.sum(w ** 2, axis=1) < jitter
+  w = w.copy()
+  # Setting all the weights (when they are all zero) to 1. This will be normalised by beta.
+  w[are_the_weights_all_zero] = 1.
+  return w
 
 @jaxtyped(typechecker=beartype)
 def lol_iid(
