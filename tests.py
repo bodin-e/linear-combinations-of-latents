@@ -50,14 +50,12 @@ def _test_lol_gaussian(batch_dimension, num_seeds, num_dims):
       dist=norm(loc=mean[d], scale=std[d])
     )
 
-def _validate_samples(samples, dist):
-  result = kstest(
-    samples,
-    dist.cdf,
-  )
+def _validate_samples(samples, dist, min_pvalue=1e-5):
+  result = kstest(samples, dist.cdf)
   # Check that the probability of the sample coming from the same distribution is high enough to
   # reasonably be seen by chance.
-  assert result.pvalue > 1e-5  # This case-case should fail by chance with probability 1e-5
+  # Note that we expect this test-case to fail by chance with probability min_pvalue if it is correct.
+  assert result.pvalue >= min_pvalue
 
 if __name__ == "__main__":
   pytest.main()
