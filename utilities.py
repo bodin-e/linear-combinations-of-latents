@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 
 def plot_image_grid(
   images,
-  filepath,
+  filepath=None,
   titles=None,
   fontsize=None,
   plot_grid_indices=False,
   grid_positions=None,
-  size_scaling_factor=1.0
+  size_scaling_factor=0.3
 ):
+  write_to_file = filepath is not None
   if grid_positions is None:
     grid_positions = np.array([
       [0, i] for i in range(len(images))
@@ -44,7 +45,7 @@ def plot_image_grid(
       axis = axs[row]
     else:
       axis = axs[row, col]
-    axis.imshow(image)
+    axis.imshow(image, interpolation='nearest')
     axis.axis("off")
     if titles is not None:
       axis.set_title(titles[i], fontsize=fontsize)
@@ -63,9 +64,12 @@ def plot_image_grid(
   # Adjust subplot parameters to reduce space
   plt.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0.05, hspace=0.05)
 
-  fig.savefig(
-    filepath,
-    bbox_inches="tight",
-    pad_inches=0,
-  )
-  plt.close()
+  if write_to_file:
+    fig.savefig(
+      filepath,
+      bbox_inches="tight",
+      pad_inches=0,
+    )
+  else:
+    plt.show()
+  plt.close('all')

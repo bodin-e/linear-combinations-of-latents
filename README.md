@@ -30,3 +30,4 @@ To use this repository, clone it and install dependencies:
 git clone https://github.com/bodin-e/linear-combinations-of-latents.git
 cd linear-combinations-of-latents
 pip install -r requirements.txt
+```
