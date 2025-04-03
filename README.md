@@ -4,6 +4,8 @@ This repository provides an implementation of **LOL** (Linear combinations Of La
 
 [**Linear Combinations of Latents in Generative Models: Subspaces and Beyond**](https://arxiv.org/pdf/2408.08558)
 
+![Alt text](images/cars_subspace.png)
+
 ## Abstract
 Sampling from generative models has become a crucial tool for applications like data synthesis and augmentation. 
 Diffusion, Flow Matching and Continuous Normalizing Flows have shown effectiveness across various modalities, 
