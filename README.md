@@ -1,6 +1,6 @@
 # Linear combinations of latents in generative models: subspaces and beyond
 
-This repository provides an implementation of **LOL** (Linear combinations Of Latent variables, as presented in the paper:
+This repository provides an implementation of **LOL** (Linear combinations Of Latent variables), as presented in the paper:
 
 [**Linear Combinations of Latents in Generative Models: Subspaces and Beyond**](https://arxiv.org/pdf/2408.08558)
 
