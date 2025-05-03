@@ -37,7 +37,7 @@ from lolatents.lol_numpy import lol_iid
 # from lolatents.lol_torch import lol_iid # for PyTorch
 
 latents = lol_iid(
-  w=w_grid_including_remaining,
+  w=linear_combination_weights,
   X=seed_latents,
   cdf=latent_distribution.cdf,
   inverse_cdf=latent_distribution.ppf
