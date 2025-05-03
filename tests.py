@@ -2,7 +2,9 @@
 import numpy as np
 import pytest
 from scipy.stats import norm, uniform, logistic, beta
-from lol import lol_gaussian, lol_iid, lol_scalar
+import lol as lol_numpy
+import lol_torch
+import torch
 from scipy.stats import kstest
 
 np.random.seed(0)
@@ -30,39 +32,55 @@ def test_singularity_at_zero_handling():
   std = np.random.gamma(scale=1, shape=1, size=num_dims)
   w = np.zeros([batch_dimension, num_seeds])
   X = np.random.normal(loc=mean, scale=std, size=[batch_dimension, num_seeds, num_dims])
-  output = lol_gaussian(w, X, mean=mean)
+  output_numpy = lol_numpy.lol_gaussian(w, X, mean=mean)
   _validate_samples(
-    samples=output.flatten(),
+    samples=output_numpy.flatten(),
     dist=norm(loc=mean[0], scale=std[0])
   )
+  output_torch = lol_torch.lol_gaussian(torch.tensor(w), torch.tensor(X), mean=torch.tensor(mean))
+  # Check if the output is the same for both implementations
+  assert np.allclose(output_numpy, output_torch.numpy(), atol=1e-5), "Outputs are not close enough"
 
 def _test_lol_scalar(batch_dimension, num_seeds, dist):
   w = np.random.normal(size=[batch_dimension, num_seeds])
   X = dist.rvs(size=[batch_dimension, num_seeds])
-  output = lol_scalar(w, X, dist.cdf, dist.ppf)
-  _validate_samples(samples=output, dist=dist)
+  output_numpy = lol_numpy.lol_scalar(w, X, dist.cdf, dist.ppf)
+  _validate_samples(samples=output_numpy, dist=dist)
+  cdf = lambda x: torch.tensor(dist.cdf(x.numpy()), dtype=torch.float64)
+  ppf = lambda x: torch.tensor(dist.ppf(x.numpy()), dtype=torch.float64)
+  output_torch = lol_torch.lol_scalar(torch.tensor(w), torch.tensor(X), cdf, ppf)
+  # Check if the output is the same for both implementations
+  assert np.allclose(output_numpy, output_torch.numpy(), atol=1e-5), "Outputs are not close enough"
 
 def _test_lol_iid(batch_dimension, num_seeds, num_dims, dist):
   w = np.random.normal(size=[batch_dimension, num_seeds])
   X = dist.rvs(size=[batch_dimension, num_seeds, num_dims])
-  output = lol_iid(w, X, dist.cdf, dist.ppf)
+  output_numpy = lol_numpy.lol_iid(w, X, dist.cdf, dist.ppf)
   for d in range(num_dims):
     _validate_samples(
-      samples=output[:, d],
+      samples=output_numpy[:, d],
       dist=dist
     )
+  cdf = lambda x: torch.tensor(dist.cdf(x.numpy()), dtype=torch.float64)
+  ppf = lambda x: torch.tensor(dist.ppf(x.numpy()), dtype=torch.float64)
+  output_torch = lol_torch.lol_iid(torch.tensor(w), torch.tensor(X), cdf, ppf)
+  # Check if the output is the same for both implementations
+  assert np.allclose(output_numpy, output_torch.numpy(), atol=1e-5), "Outputs are not close enough"
 
 def _test_lol_gaussian(batch_dimension, num_seeds, num_dims):
   mean = np.random.randn(num_dims)
   std = np.random.gamma(scale=1, shape=1, size=num_dims)
   w = np.random.normal(size=[batch_dimension, num_seeds])
   X = np.random.normal(loc=mean, scale=std, size=[batch_dimension, num_seeds, num_dims])
-  output = lol_gaussian(w, X, mean=mean)
+  output_numpy = lol_numpy.lol_gaussian(w, X, mean=mean)
   for d in range(num_dims):
     _validate_samples(
-      samples=output[:, d],
+      samples=output_numpy[:, d],
       dist=norm(loc=mean[d], scale=std[d])
     )
+  output_torch = lol_torch.lol_gaussian(torch.tensor(w), torch.tensor(X), mean=torch.tensor(mean))
+  # Check if the output is the same for both implementations
+  assert np.allclose(output_numpy, output_torch.numpy(), atol=1e-5), "Outputs are not close enough"
 
 def _validate_samples(samples, dist, min_pvalue=1e-5):
   result = kstest(samples, dist.cdf)

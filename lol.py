@@ -108,7 +108,8 @@ def lol_iid(
   unit_gaussian_seed_samples = norm.ppf(unit_uniform_seed_samples)
   unit_gaussian_samples = lol_gaussian(w=w, X=unit_gaussian_seed_samples, jitter=jitter)
   unit_uniform_samples = norm.cdf(unit_gaussian_samples)
-  return inverse_cdf(unit_uniform_samples)
+  samples = inverse_cdf(unit_uniform_samples)
+  return samples
 
 @jaxtyped(typechecker=beartype)
 def lol_scalar(
@@ -134,7 +135,7 @@ def lol_scalar(
   :param inverse_cdf: Inverse CDF of the distribution the seeds are sampled from.
   :return: Samples from the same distribution as the seeds.
   """
-  batch_dimension, num_seeds = X.shape
+  batch_dimension, num_seeds = w.shape
   _check_larger_than_zero(batch_dimension, "batch_dimension")
   _check_larger_than_zero(num_seeds, "num_seeds")
   _check_larger_than_zero(jitter, "jitter")
