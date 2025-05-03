@@ -2,8 +2,8 @@
 import numpy as np
 import pytest
 from scipy.stats import norm, uniform, logistic, beta
-import lol as lol_numpy
-import lol_torch
+from lolatents import lol_torch
+from lolatents import lol_numpy
 import torch
 from scipy.stats import kstest
 

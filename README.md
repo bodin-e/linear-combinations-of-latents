@@ -19,17 +19,28 @@ variables that adhere to the assumptions of the generative model. As LOL is easy
 the broader task of forming any linear combinations, e.g. the construction of subspaces of the latent space, 
 LOL dramatically simplifies the creation of expressive low-dimensional representations of high-dimensional objects.
 
+
+## Installation
+```sh
+pip install lolatents
+```
+
 ## Usage
 To see the LOL method in use, please see the provided example notebooks:
 
 - **[`example_interpolation.ipynb`](example_interpolation.ipynb)** – Demonstrates simple interpolation.
 - **[`example_subspace.ipynb`](example_subspace.ipynb)** – Illustrates how latent subspaces can be defined. 
-
-## Installation
-To use this repository, clone it and install dependencies:
+- **[`example_grid.ipynb`](example_subspace.ipynb)** – Similar as above but directly using linear combination weights.
 
 ```sh
-git clone https://github.com/bodin-e/linear-combinations-of-latents.git
-cd linear-combinations-of-latents
-pip install -r requirements.txt
+from lolatents.lol_numpy import lol_iid
+# from lolatents.lol_torch import lol_iid # for PyTorch
+
+latents = lol_iid(
+  w=w_grid_including_remaining,
+  X=seed_latents,
+  cdf=latent_distribution.cdf,
+  inverse_cdf=latent_distribution.ppf
+)
 ```
+

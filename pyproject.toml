@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lolatents"
+version = "0.1.1"
+description = "Toolkit to form subspaces of latent spaces and more in diffusion models and other latent variable models."
+readme = "README.md"
+requires-python = ">=3.6"
+authors = [{ name = "Erik Bodin", email = "mail@erikbodin.com" }]
+license = "MIT"
+dependencies = [
+    "numpy>=2.0.0",
+    "beartype>=0.19.0",
+    "scipy>=1.10.0",
+    "jaxtyping>=0.2.38"
+]
+classifiers = [
+    "Programming Language :: Python :: 3"
+]
+
+[tool.setuptools.packages.find]
+include = ["lolatents*"]
+exclude = ["images"]
